@@ -306,8 +306,8 @@ def handle_location(event):
 
     params = {
         "location": f"{latitude},{longitude}",
-        "radius": 8000,
-        "keyword": "โรงพยาบาลทั่วไป",
+        "radius": 15000,
+        "keyword": "โรงพยาบาล",
         "key": GOOGLE_API_KEY
     }
 
