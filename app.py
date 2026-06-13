@@ -293,7 +293,7 @@ def handle_location(event):
 
     response = requests.get(url, params=params)
     data = response.json()
-    print(data)
+    print("GOOGLE RESPONSE =", data)
 
     hospitals = data.get("results", [])[:3]
 
