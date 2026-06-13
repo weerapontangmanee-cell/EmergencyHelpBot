@@ -273,7 +273,7 @@ def handle_message(event):
         event.reply_token,
         TextSendMessage(text=reply_text)
     )
-    
+
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
     latitude = event.message.latitude
@@ -283,7 +283,7 @@ def handle_location(event):
 
     params = {
         "location": f"{latitude},{longitude}",
-        "radius": 5000,
+        "radius": 20000,
         "type": "hospital",
         "key": GOOGLE_API_KEY
     }
