@@ -280,45 +280,12 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
-    print("LOCATION RECEIVED")
-    latitude = event.message.latitude
-    longitude = event.message.longitude
-
-    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-
-    params = {
-        "location": f"{latitude},{longitude}",
-        "radius": 50000,
-        "type": "hospital",
-        "key": GOOGLE_API_KEY
-    }
-
-    response = requests.get(url, params=params)
-    data = response.json()
-    print("GOOGLE RESPONSE =", data)
-
-    hospitals = data.get("results", [])[:3]
-
-    reply_text = "🏥 โรงพยาบาลใกล้คุณ\n\n"
-
-    if hospitals:
-        for i, hospital in enumerate(hospitals, start=1):
-            name = hospital.get("name", "ไม่ทราบชื่อ")
-
-            lat = hospital["geometry"]["location"]["lat"]
-            lng = hospital["geometry"]["location"]["lng"]
-
-            map_link = f"https://maps.google.com/?q={lat},{lng}"
-
-            reply_text += f"{i}. {name}\n{map_link}\n\n"
-    else:
-        reply_text += "ไม่พบโรงพยาบาลใกล้เคียง\n"
-
-    reply_text += "\n🚑 หากเป็นเหตุฉุกเฉิน โปรดโทร 1669"
-
+    
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=reply_text)
+        TextSendMessage(
+            text=f"📍 ได้รับตำแหน่งแล้ว\nLat={event.message.latitude}\nLng={event.message.longitude}"
+        )
     )
 
 if __name__ == "__main__":
