@@ -1,6 +1,7 @@
 from flask import Flask, request, abort
 from dotenv import load_dotenv
 import os
+import requests
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -12,6 +13,7 @@ app = Flask(__name__)
 
 CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
 CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
@@ -271,27 +273,40 @@ def handle_message(event):
         event.reply_token,
         TextSendMessage(text=reply_text)
     )
-
+    
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
     latitude = event.message.latitude
     longitude = event.message.longitude
 
-    maps_url = f"https://www.google.com/maps/search/hospital/@{latitude},{longitude},15z"
+    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
-    reply_text = f"""📍 ได้รับตำแหน่งแล้ว
+    params = {
+        "location": f"{latitude},{longitude}",
+        "radius": 5000,
+        "type": "hospital",
+        "key": GOOGLE_API_KEY
+    }
 
-🏥 ค้นหาโรงพยาบาลใกล้ฉัน
+    response = requests.get(url, params=params)
+    data = response.json()
 
-📍 กดเปิดแผนที่:
-{maps_url}
+    hospitals = data.get("results", [])[:3]
 
-🚑 หากเกิดเหตุฉุกเฉิน โปรดโทร 1669 ทันที
-"""
+    reply_text = "🏥 โรงพยาบาลใกล้คุณ\n\n"
+
+    if hospitals:
+        for i, hospital in enumerate(hospitals, start=1):
+            name = hospital.get("name", "ไม่ทราบชื่อ")
+            reply_text += f"{i}. {name}\n"
+    else:
+        reply_text += "ไม่พบโรงพยาบาลใกล้เคียง\n"
+
+    reply_text += "\n🚑 หากเป็นเหตุฉุกเฉิน โปรดโทร 1669"
 
     line_bot_api.reply_message(
-      event.reply_token,
-      TextSendMessage(text=reply_text)
+        event.reply_token,
+        TextSendMessage(text=reply_text)
     )
 
 if __name__ == "__main__":
