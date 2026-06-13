@@ -277,17 +277,21 @@ def handle_location(event):
     latitude = event.message.latitude
     longitude = event.message.longitude
 
+    maps_url = f"https://www.google.com/maps/search/hospital/@{latitude},{longitude},15z"
+
     reply_text = f"""📍 ได้รับตำแหน่งแล้ว
 
-ละติจูด (Latitude): {latitude}
-ลองจิจูด (Longitude): {longitude}
+🏥 ค้นหาโรงพยาบาลใกล้ฉัน
 
-🚑 หากเกิดเหตุฉุกเฉิน โปรดแจ้งพิกัดนี้แก่เจ้าหน้าที่ 1669
+📍 กดเปิดแผนที่:
+{maps_url}
+
+🚑 หากเกิดเหตุฉุกเฉิน โปรดโทร 1669 ทันที
 """
 
     line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=reply_text)
+      event.reply_token,
+      TextSendMessage(text=reply_text)
     )
 
 if __name__ == "__main__":
