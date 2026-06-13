@@ -2,6 +2,7 @@ from flask import Flask, request, abort
 from dotenv import load_dotenv
 import os
 import requests
+from math import radians, sin, cos, sqrt, atan2
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -19,6 +20,22 @@ print("GOOGLE_API_KEY =", GOOGLE_API_KEY)
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
 
+def distance_km(lat1, lon1, lat2, lon2):
+    R = 6371
+
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+
+    a = (
+        sin(dlat / 2) ** 2
+        + cos(radians(lat1))
+        * cos(radians(lat2))
+        * sin(dlon / 2) ** 2
+    )
+
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    return R * c
 
 @app.route("/")
 def home():
@@ -313,6 +330,15 @@ def handle_location(event):
        ):
             filtered_hospitals.append(hospital)
 
+    filtered_hospitals.sort(
+    key=lambda h: distance_km(
+        latitude,
+        longitude,
+        h["geometry"]["location"]["lat"],
+        h["geometry"]["location"]["lng"]
+    )
+)
+
     hospitals = filtered_hospitals[:3]
 
     reply_text = "🏥 โรงพยาบาลใกล้คุณ\n\n"
@@ -324,9 +350,21 @@ def handle_location(event):
             lat = hospital["geometry"]["location"]["lat"]
             lng = hospital["geometry"]["location"]["lng"]
 
+
+            distance = distance_km(
+                latitude,
+                longitude,
+                lat,
+                lng
+            )
+
             map_link = f"https://maps.google.com/?q={lat},{lng}"
 
-            reply_text += f"{i}. {name}\n{map_link}\n\n"
+            reply_text += (
+                f"{i}. {name}\n"
+                f"📏 {distance:.1f} กม.\n"
+                f"{map_link}\n\n"
+            )
     else:
         reply_text += "ไม่พบโรงพยาบาลใกล้เคียง\n"
 
