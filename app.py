@@ -307,7 +307,7 @@ def handle_location(event):
     params = {
         "location": f"{latitude},{longitude}",
         "radius": 8000,
-        "keyword": "โรงพยาบาล",
+        "keyword": "โรงพยาบาลทั่วไป",
         "key": GOOGLE_API_KEY
     }
 
@@ -322,11 +322,14 @@ def handle_location(event):
         name = hospital.get("name", "")
 
         if (
-            "สัตว์" not in name
+            "โรงพยาบาล" in name
+            and "สัตว์" not in name
             and "Animal" not in name
             and "Veterinary" not in name
             and "Pet" not in name
             and "Vet" not in name
+            and "คลินิก" not in name
+            and "Clinic" not in name
        ):
             filtered_hospitals.append(hospital)
 
@@ -362,7 +365,7 @@ def handle_location(event):
 
             reply_text += (
                 f"{i}. {name}\n"
-                f"📏 {distance:.1f} กม.\n"
+                f"📍 ระยะโดยประมาณ {distance:.1f} กม.\n"
                 f"{map_link}\n\n"
             )
     else:
