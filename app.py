@@ -30,6 +30,7 @@ def callback():
     body = request.get_data(as_text=True)
 
     print("BODY =", body)
+    print("SIGNATURE =", signature)
 
     try:
         handler.handle(body, signature)
