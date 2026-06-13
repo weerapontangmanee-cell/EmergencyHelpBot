@@ -314,7 +314,7 @@ def handle_location(event):
     response = requests.get(url, params=params)
     data = response.json()
 
-    hospitals = data.get("results", [])[:10]
+    hospitals = data.get("results", [])
 
     filtered_hospitals = []
 
