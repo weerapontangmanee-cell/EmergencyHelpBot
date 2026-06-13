@@ -289,17 +289,31 @@ def handle_location(event):
 
     params = {
         "location": f"{latitude},{longitude}",
-        "radius": 5000,
-        "type": "hospital",
+        "radius": 15000,
+        "keyword": "โรงพยาบาล",
         "key": GOOGLE_API_KEY
     }
 
     response = requests.get(url, params=params)
     data = response.json()
 
-    print("GOOGLE RESPONSE =", data)
+    hospitals = data.get("results", [])[:10]
 
-    hospitals = data.get("results", [])[:3]
+    filtered_hospitals = []
+
+    for hospital in hospitals:
+        name = hospital.get("name", "")
+
+        if (
+            "สัตว์" not in name
+            and "Animal" not in name
+            and "Veterinary" not in name
+            and "Pet" not in name
+            and "Vet" not in name
+       ):
+            filtered_hospitals.append(hospital)
+
+    hospitals = filtered_hospitals[:3]
 
     reply_text = "🏥 โรงพยาบาลใกล้คุณ\n\n"
 
