@@ -4,7 +4,7 @@ import os
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage
 
 load_dotenv()
 
@@ -272,6 +272,23 @@ def handle_message(event):
         TextSendMessage(text=reply_text)
     )
 
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_location(event):
+    latitude = event.message.latitude
+    longitude = event.message.longitude
+
+    reply_text = f"""📍 ได้รับตำแหน่งแล้ว
+
+ละติจูด (Latitude): {latitude}
+ลองจิจูด (Longitude): {longitude}
+
+🚑 หากเกิดเหตุฉุกเฉิน โปรดแจ้งพิกัดนี้แก่เจ้าหน้าที่ 1669
+"""
+
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=reply_text)
+    )
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
