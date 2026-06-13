@@ -330,6 +330,8 @@ def handle_location(event):
             and "Vet" not in name
             and "คลินิก" not in name
             and "Clinic" not in name
+            and "รพ.สต." not in name
+            and "ส่งเสริมสุขภาพ" not in name
        ):
             filtered_hospitals.append(hospital)
 
