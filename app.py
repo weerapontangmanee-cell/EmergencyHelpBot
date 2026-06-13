@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
 CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(CHANNEL_SECRET)
@@ -266,6 +266,8 @@ def handle_message(event):
 🦂 แมงป่องต่อย
 
 🚨 ฉุกเฉิน
+🏥 โรงพยาบาลใกล้ฉัน
+📍 ส่งตำแหน่งของคุณ
 ☎️ เบอร์ฉุกเฉิน
 """
 
@@ -276,6 +278,7 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
+    print("LOCATION RECEIVED")
     latitude = event.message.latitude
     longitude = event.message.longitude
 
@@ -290,6 +293,7 @@ def handle_location(event):
 
     response = requests.get(url, params=params)
     data = response.json()
+    print(data)
 
     hospitals = data.get("results", [])[:3]
 
@@ -298,7 +302,13 @@ def handle_location(event):
     if hospitals:
         for i, hospital in enumerate(hospitals, start=1):
             name = hospital.get("name", "ไม่ทราบชื่อ")
-            reply_text += f"{i}. {name}\n"
+
+            lat = hospital["geometry"]["location"]["lat"]
+            lng = hospital["geometry"]["location"]["lng"]
+
+            map_link = f"https://maps.google.com/?q={lat},{lng}"
+
+            reply_text += f"{i}. {name}\n{map_link}\n\n"
     else:
         reply_text += "ไม่พบโรงพยาบาลใกล้เคียง\n"
 
