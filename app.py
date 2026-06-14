@@ -7,7 +7,7 @@ from math import radians, sin, cos, sqrt, atan2
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage
-from content import REPLIES, DEFAULT_REPLY
+from content import REPLIES, DEFAULT_REPLY, KEYWORD_ORDER
 
 load_dotenv()
 
@@ -67,9 +67,9 @@ def handle_message(event):
 
     reply_text = DEFAULT_REPLY
 
-    for keyword, content in REPLIES.items():
+    for keyword in KEYWORD_ORDER:
         if keyword in user_text:
-            reply_text = content
+            reply_text = REPLIES[keyword]
             break
 
     line_bot_api.reply_message(
