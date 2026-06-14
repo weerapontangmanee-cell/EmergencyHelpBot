@@ -7,7 +7,9 @@ from math import radians, sin, cos, sqrt, atan2
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage
-from content import REPLIES, DEFAULT_REPLY, KEYWORD_ORDER
+
+from content import CASES, SIMPLE_REPLIES, DEFAULT_REPLY, KEYWORD_ORDER
+from flex_messages import build_flex
 
 load_dotenv()
 
@@ -65,17 +67,40 @@ def handle_message(event):
 
     print("ได้รับข้อความ:", user_text)
 
-    reply_text = DEFAULT_REPLY
-
+    matched_keyword = None
     for keyword in KEYWORD_ORDER:
         if keyword in user_text:
-            reply_text = REPLIES[keyword]
+            matched_keyword = keyword
             break
 
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=reply_text)
-    )
+    if matched_keyword is None:
+        # ไม่ตรงกับคำใดเลย -> ส่งเมนูเริ่มต้น
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=DEFAULT_REPLY)
+        )
+        return
+
+    if matched_keyword in CASES:
+        # เคสที่มีข้อมูล structured -> ส่งเป็น Flex Message
+        flex_message = build_flex(matched_keyword, CASES[matched_keyword])
+        line_bot_api.reply_message(
+            event.reply_token,
+            flex_message
+        )
+    elif matched_keyword in SIMPLE_REPLIES:
+        # เคสข้อความธรรมดา (เบอร์ฉุกเฉิน, ฉุกเฉิน, โรงพยาบาลใกล้ฉัน)
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=SIMPLE_REPLIES[matched_keyword])
+        )
+    else:
+        # เผื่อไว้ ถ้า keyword อยู่ใน KEYWORD_ORDER แต่ไม่มีข้อมูลจริง
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=DEFAULT_REPLY)
+        )
+
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_location(event):
