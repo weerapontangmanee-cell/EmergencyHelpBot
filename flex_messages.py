@@ -4,6 +4,8 @@ from linebot.models import (
     BoxComponent,
     TextComponent,
     SeparatorComponent,
+    ButtonComponent,
+    URIAction,
 )
 
 
@@ -83,6 +85,23 @@ def build_flex(case_key, case_data):
     """
 
     body_contents = []
+
+    # ปุ่มโทร 1669
+    footer = BoxComponent(
+        layout="vertical",
+        padding_all="12px",
+        contents=[
+            ButtonComponent(
+                action=URIAction(
+                    label="📞 โทร 1669 ทันที",
+                    uri="tel:1669",
+                ),
+                style="primary",
+                color=COLOR_PRIMARY,
+                height="sm",
+            )
+        ],
+    )
 
     # หัวข้อ
     body_contents.append(
@@ -168,9 +187,10 @@ def build_flex(case_key, case_data):
             layout="vertical",
             padding_all="16px",
             contents=body_contents,
-        )
+        ),
+        footer=footer,
     )
-
+    
     return FlexSendMessage(
         alt_text=f"{case_data['emoji']} {case_data['title']}",
         contents=bubble,
