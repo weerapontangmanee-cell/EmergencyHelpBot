@@ -295,3 +295,70 @@ def build_default_menu():
         alt_text="🚑 Emergency Help Bot - เลือกสถานการณ์",
         contents=bubble,
     )
+    
+def build_call_1669():
+    """Flex Message สำหรับโทร 1669 พร้อมปุ่มกดโทรเลย"""
+
+    bubble = BubbleContainer(
+        header=BoxComponent(
+            layout="vertical",
+            background_color=COLOR_PRIMARY,
+            padding_all="16px",
+            contents=[
+                TextComponent(
+                    text="🚨 เหตุฉุกเฉิน",
+                    weight="bold",
+                    size="xl",
+                    color="#FFFFFF",
+                ),
+            ],
+        ),
+        body=BoxComponent(
+            layout="vertical",
+            padding_all="16px",
+            contents=[
+                TextComponent(
+                    text="กรุณาโทร 1669 ทันที",
+                    weight="bold",
+                    size="lg",
+                    color="#333333",
+                    align="center",
+                ),
+                TextComponent(
+                    text="🚑 บริการตลอด 24 ชั่วโมง",
+                    size="md",
+                    color="#757575",
+                    align="center",
+                    margin="md",
+                ),
+                TextComponent(
+                    text="ให้คนใกล้ชิดโทรแทนหากโทรเองไม่ได้",
+                    size="sm",
+                    color="#757575",
+                    align="center",
+                    wrap=True,
+                    margin="sm",
+                ),
+            ],
+        ),
+        footer=BoxComponent(
+            layout="vertical",
+            padding_all="12px",
+            contents=[
+                ButtonComponent(
+                    action=URIAction(
+                        label="📞 กดโทร 1669 เลย",
+                        uri="tel:1669",
+                    ),
+                    style="primary",
+                    color=COLOR_PRIMARY,
+                    height="sm",
+                )
+            ],
+        ),
+    )
+
+    return FlexSendMessage(
+        alt_text="🚨 กรุณาโทร 1669 ทันที",
+        contents=bubble,
+    )

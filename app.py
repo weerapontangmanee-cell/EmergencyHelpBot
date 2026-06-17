@@ -9,7 +9,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage
 
 from content import CASES, SIMPLE_REPLIES, DEFAULT_REPLY, KEYWORD_ORDER
-from flex_messages import build_flex, build_default_menu
+from flex_messages import build_flex, build_default_menu, build_call_1669
 
 load_dotenv()
 
@@ -88,11 +88,16 @@ def handle_message(event):
             flex_message
         )
     elif matched_keyword in SIMPLE_REPLIES:
-        # เคสข้อความธรรมดา (เบอร์ฉุกเฉิน, ฉุกเฉิน, โรงพยาบาลใกล้ฉัน)
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=SIMPLE_REPLIES[matched_keyword])
-        )
+        if matched_keyword == "โทร 1669":
+            line_bot_api.reply_message(
+                event.reply_token,
+                build_call_1669()
+            )
+        else:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=SIMPLE_REPLIES[matched_keyword])
+            )
     else:
         # เผื่อไว้ ถ้า keyword อยู่ใน KEYWORD_ORDER แต่ไม่มีข้อมูลจริง
         line_bot_api.reply_message(
