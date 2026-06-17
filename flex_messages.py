@@ -6,6 +6,7 @@ from linebot.models import (
     SeparatorComponent,
     ButtonComponent,
     URIAction,
+    MessageAction,
 )
 
 
@@ -232,9 +233,9 @@ def build_default_menu():
                 margin="sm",
                 corner_radius="8px",
                 background_color="#F5F5F5",
-                action=URIAction(
+                action=MessageAction(
                     label=f"{emoji} {label}",
-                    uri=f"https://line.me/R/oaMessage/@YOUR_BOT_ID/?{label}",
+                    text=label,
                 ),
                 contents=[
                     TextComponent(
