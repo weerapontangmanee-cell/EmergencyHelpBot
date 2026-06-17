@@ -195,3 +195,102 @@ def build_flex(case_key, case_data):
         alt_text=f"{case_data['emoji']} {case_data['title']}",
         contents=bubble,
     )
+
+def build_default_menu():
+    """สร้าง Flex Message สำหรับเมนูเริ่มต้น พร้อมปุ่มโทร 1669"""
+
+    categories = [
+        ("🔥", "ไฟไหม้"),
+        ("🚑", "หมดสติ"),
+        ("🩸", "เลือดออก"),
+        ("❤️", "หัวใจหยุดเต้น"),
+        ("🚨", "แพ้รุนแรง"),
+        ("🦴", "กระดูกหัก"),
+        ("🌊", "จมน้ำ"),
+        ("⚡", "ไฟดูด"),
+        ("♨️", "น้ำร้อนลวก"),
+        ("🩹", "แผลถลอก"),
+        ("👃", "เลือดกำเดาไหล"),
+        ("😵", "เป็นลม"),
+        ("🍽️", "สำลักอาหาร"),
+        ("🦟", "แมลงกัดต่อย"),
+        ("☀️", "ฮีตสโตรก"),
+        ("⚠️", "ลมชัก"),
+        ("🐕", "สุนัขกัด"),
+        ("🐍", "งูกัด"),
+        ("🐝", "ผึ้งต่อย"),
+        ("🦂", "แมงป่องต่อย"),
+    ]
+
+    # สร้างปุ่มแต่ละหัวข้อ
+    buttons = []
+    for emoji, label in categories:
+        buttons.append(
+            BoxComponent(
+                layout="horizontal",
+                padding_all="8px",
+                margin="sm",
+                corner_radius="8px",
+                background_color="#F5F5F5",
+                action=URIAction(
+                    label=f"{emoji} {label}",
+                    uri=f"https://line.me/R/oaMessage/@YOUR_BOT_ID/?{label}",
+                ),
+                contents=[
+                    TextComponent(
+                        text=f"{emoji} {label}",
+                        size="sm",
+                        color="#333333",
+                        wrap=False,
+                    )
+                ],
+            )
+        )
+
+    bubble = BubbleContainer(
+        header=BoxComponent(
+            layout="vertical",
+            background_color=COLOR_PRIMARY,
+            padding_all="16px",
+            contents=[
+                TextComponent(
+                    text="🚑 Emergency Help Bot",
+                    weight="bold",
+                    size="xl",
+                    color="#FFFFFF",
+                ),
+                TextComponent(
+                    text="พิมพ์ชื่อเหตุการณ์เพื่อดูวิธีปฐมพยาบาล",
+                    size="sm",
+                    color="#FFCDD2",
+                    margin="sm",
+                    wrap=True,
+                ),
+            ],
+        ),
+        body=BoxComponent(
+            layout="vertical",
+            padding_all="12px",
+            contents=buttons,
+        ),
+        footer=BoxComponent(
+            layout="vertical",
+            padding_all="12px",
+            contents=[
+                ButtonComponent(
+                    action=URIAction(
+                        label="📞 โทร 1669 ทันที",
+                        uri="tel:1669",
+                    ),
+                    style="primary",
+                    color=COLOR_PRIMARY,
+                    height="sm",
+                )
+            ],
+        ),
+    )
+
+    return FlexSendMessage(
+        alt_text="🚑 Emergency Help Bot - เลือกสถานการณ์",
+        contents=bubble,
+    )

@@ -9,7 +9,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, LocationMessage
 
 from content import CASES, SIMPLE_REPLIES, DEFAULT_REPLY, KEYWORD_ORDER
-from flex_messages import build_flex
+from flex_messages import build_flex, build_default_menu
 
 load_dotenv()
 
@@ -74,10 +74,9 @@ def handle_message(event):
             break
 
     if matched_keyword is None:
-        # ไม่ตรงกับคำใดเลย -> ส่งเมนูเริ่มต้น
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=DEFAULT_REPLY)
+            build_default_menu()
         )
         return
 
